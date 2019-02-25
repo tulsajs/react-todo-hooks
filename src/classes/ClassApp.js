@@ -1,5 +1,14 @@
 import React, { Component, createRef } from 'react';
 import uuidv4 from 'uuid/v4';
+import Header from './components/Header';
+import Input from './components/Input';
+import List from './components/List';
+import Item from './components/Item';
+import Footer, {
+  FooterButton,
+  FooterList,
+  FooterListItem
+} from './components/Footer';
 
 const COMPLETE = 'complete';
 const ALL = 'all';
@@ -37,6 +46,7 @@ export default class ClassApp extends Component {
   editTodo = todo => {
     this.todoRef.current.value = todo.name;
     this.setState(state => ({ editingTodoId: todo.id }));
+    this.todoRef.current.focus();
   };
 
   removeTodo = id => {
@@ -77,48 +87,65 @@ export default class ClassApp extends Component {
   setFilter = key => this.setState(state => ({ ...state, filter: key }));
 
   render() {
-    const { editingTodoId } = this.state;
+    const { editingTodoId, filter } = this.state;
     const filteredTodos = this.filterTodos();
     return (
       <>
-        <ul>
-          <li>
-            <button onClick={() => this.setFilter(ALL)}>
-              All {this.filterTodos(ALL).length}
-            </button>
-          </li>
-          <li>
-            <button onClick={() => this.setFilter(COMPLETE)}>
-              Completed {this.filterTodos(COMPLETE).length}
-            </button>
-          </li>
-          <li>
-            <button onClick={() => this.setFilter(INCOMPLETE)}>
-              Incomplete {this.filterTodos(INCOMPLETE).length}
-            </button>
-          </li>
-        </ul>
-        <button onClick={this.clearCompleted}>Clear Completed</button>
+        <Header>todos</Header>
         <form noValidate onSubmit={this.addTodo}>
-          <input ref={this.todoRef} />
-          <button>{editingTodoId ? 'update todo' : 'add todo'}</button>
+          <Input ref={this.todoRef} placeholder="What needs to be done?" />
         </form>
-        <ul>
+        <List>
           {filteredTodos.map(todo => (
-            <li key={todo.id}>
-              {todo.name}{' '}
-              <button onClick={() => this.toggleTodoStatus(todo.id)}>
-                {todo.completed ? 'X' : '[ ]'}
-              </button>
+            <Item key={todo.id}>
+              <input
+                type="checkbox"
+                onChange={() => this.toggleTodoStatus(todo.id)}
+              />
+              {todo.name}
               {editingTodoId !== todo.id && (
-                <button onClick={() => this.removeTodo(todo.id)}>
-                  remove todo
-                </button>
+                <>
+                  <button onClick={() => this.removeTodo(todo.id)}>
+                    remove todo
+                  </button>
+                  <button onClick={() => this.editTodo(todo)}>edit todo</button>
+                </>
               )}
-              <button onClick={() => this.editTodo(todo)}>edit todo</button>
-            </li>
+            </Item>
           ))}
-        </ul>
+        </List>
+        <Footer>
+          <FooterList>
+            <FooterListItem>
+              <FooterButton
+                active={filter === ALL}
+                onClick={() => this.setFilter(ALL)}>
+                All {this.filterTodos(ALL).length}
+              </FooterButton>
+            </FooterListItem>
+            <FooterListItem>
+              <FooterButton
+                active={filter === COMPLETE}
+                onClick={() => this.setFilter(COMPLETE)}>
+                Completed {this.filterTodos(COMPLETE).length}
+              </FooterButton>
+            </FooterListItem>
+            <FooterListItem>
+              <FooterButton
+                active={filter === INCOMPLETE}
+                onClick={() => this.setFilter(INCOMPLETE)}>
+                Incomplete {this.filterTodos(INCOMPLETE).length}
+              </FooterButton>
+            </FooterListItem>
+            {this.filterTodos(COMPLETE).length > 0 && (
+              <FooterListItem>
+                <FooterButton onClick={this.clearCompleted}>
+                  Clear Completed
+                </FooterButton>
+              </FooterListItem>
+            )}
+          </FooterList>
+        </Footer>
       </>
     );
   }
