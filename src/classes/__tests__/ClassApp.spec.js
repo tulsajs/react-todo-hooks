@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  render,
-  fireEvent,
-  cleanup,
-  waitForElement
-} from 'react-testing-library';
+import { render, fireEvent, cleanup } from 'react-testing-library';
 import ClassApp from '../ClassApp';
 
 afterEach(cleanup);
