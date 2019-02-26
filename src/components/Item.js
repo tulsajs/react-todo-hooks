@@ -7,4 +7,7 @@ export default styled.li`
     0 5px 15px 0 rgba(0, 0, 0, 0.08);
   background-color: #ffffff;
   border-top: 1px solid #ededed;
+  display: flex;
+  align-items: center;
+  color: #3D4852;
 `;

@@ -1,14 +1,17 @@
 import React, { Component, createRef } from 'react';
 import uuidv4 from 'uuid/v4';
-import Header from './components/Header';
-import Input from './components/Input';
-import List from './components/List';
-import Item from './components/Item';
-import Footer, {
+import {
+  ActionButton,
+  Checkbox,
+  Footer,
   FooterButton,
   FooterList,
-  FooterListItem
-} from './components/Footer';
+  FooterListItem,
+  Header,
+  Input,
+  Item,
+  List
+} from '../components';
 
 const COMPLETE = 'complete';
 const ALL = 'all';
@@ -57,6 +60,7 @@ export default class ClassApp extends Component {
 
   clearCompleted = () => {
     this.setState(state => ({
+      editingTodoId: null,
       todos: state.todos.filter(todo => !todo.completed)
     }));
   };
@@ -91,25 +95,30 @@ export default class ClassApp extends Component {
     const filteredTodos = this.filterTodos();
     return (
       <>
-        <Header>todos</Header>
+        <Header>Todos</Header>
         <form noValidate onSubmit={this.addTodo}>
           <Input ref={this.todoRef} placeholder="What needs to be done?" />
         </form>
         <List>
           {filteredTodos.map(todo => (
             <Item key={todo.id}>
-              <input
+              <Checkbox
                 type="checkbox"
+                checked={todo.completed}
                 onChange={() => this.toggleTodoStatus(todo.id)}
               />
               {todo.name}
               {editingTodoId !== todo.id && (
-                <>
-                  <button onClick={() => this.removeTodo(todo.id)}>
-                    remove todo
-                  </button>
-                  <button onClick={() => this.editTodo(todo)}>edit todo</button>
-                </>
+                <span style={{ marginLeft: 'auto' }}>
+                  <ActionButton
+                    style={{ marginRight: 5 }}
+                    onClick={() => this.removeTodo(todo.id)}
+                  />
+                  <ActionButton
+                    type="edit"
+                    onClick={() => this.editTodo(todo)}
+                  />
+                </span>
               )}
             </Item>
           ))}

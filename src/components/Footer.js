@@ -34,6 +34,6 @@ export const FooterButton = styled.button`
   ${props =>
     props.active &&
     `
-    border: 1px solid rgba(175, 47, 47, 0.7);
+    border: 1px solid #2779BD;
   `}
 `;
