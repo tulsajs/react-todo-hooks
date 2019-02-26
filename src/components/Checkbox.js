@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled/macro';
 
-const CheckboxContainer = styled.label`
+const CheckboxContainer = styled.span`
   width: 16px;
   height: 16px;
   border 1px solid #2779BD;

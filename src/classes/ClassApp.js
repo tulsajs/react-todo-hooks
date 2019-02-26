@@ -10,6 +10,7 @@ import {
   Header,
   Input,
   Item,
+  Label,
   List
 } from '../components';
 
@@ -96,25 +97,37 @@ export default class ClassApp extends Component {
     return (
       <>
         <Header>Todos</Header>
-        <form noValidate onSubmit={this.addTodo}>
-          <Input ref={this.todoRef} placeholder="What needs to be done?" />
+        <form data-testid="form" noValidate onSubmit={this.addTodo}>
+          <Label htmlFor="todo-input">
+            <Input
+              id="todo-input"
+              aria-label="todo-input"
+              ref={this.todoRef}
+              placeholder="What needs to be done?"
+            />
+          </Label>
         </form>
         <List>
           {filteredTodos.map(todo => (
-            <Item key={todo.id}>
-              <Checkbox
-                type="checkbox"
-                checked={todo.completed}
-                onChange={() => this.toggleTodoStatus(todo.id)}
-              />
-              {todo.name}
+            <Item key={todo.id} data-testid="item">
+              <Label>
+                <Checkbox
+                  data-testid="todo-checkbox"
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => this.toggleTodoStatus(todo.id)}
+                />
+                <span>{todo.name}</span>
+              </Label>
               {editingTodoId !== todo.id && (
                 <span style={{ marginLeft: 'auto' }}>
                   <ActionButton
+                    data-testid="delete-todo"
                     style={{ marginRight: 5 }}
                     onClick={() => this.removeTodo(todo.id)}
                   />
                   <ActionButton
+                    data-testid="edit-todo"
                     type="edit"
                     onClick={() => this.editTodo(todo)}
                   />

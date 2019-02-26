@@ -6,29 +6,56 @@ const Button = styled.button`
   padding: 4px;
   box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.11),
     0 5px 15px 0 rgba(0, 0, 0, 0.08);
-  background-color: #2779bd;
   align-items: center;
   border-radius: 2px;
   border: none;
+  cursor: pointer;
+
+  background-color: #6cb2eb;
   svg {
     path {
       fill: #eff8ff;
     }
   }
+
   &:focus,
+  &:hover,
   &:active {
     background-color: #eff8ff;
     svg {
       path {
-        fill: #2779bd;
+        fill: #6cb2eb;
       }
     }
   }
+
+  ${props =>
+    props.type !== 'edit' &&
+    `
+  background-color: #EF5753;
+  svg {
+    path {
+      fill: #FCEBEA;
+    }
+  }
+  
+  &:focus,
+  &:hover,
+  &:active {
+    background-color: #FCEBEA;
+    svg {
+      path {
+        fill: #EF5753;
+      }
+    }
+  } 
+
+`}
 `;
 
 export default ({ type, ...props }) => {
   return (
-    <Button {...props}>
+    <Button type={type} {...props}>
       {type === 'edit' ? (
         <svg
           width="20"

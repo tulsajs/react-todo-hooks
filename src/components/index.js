@@ -5,4 +5,5 @@ export { default as Input } from './Input';
 export { default as Item } from './Item';
 export { default as List } from './List';
 export { default as Checkbox } from './Checkbox';
+export { default as Label } from './Label';
 export { Footer, FooterButton, FooterList, FooterListItem };
