@@ -2,14 +2,14 @@ import { useReducer } from 'react';
 import uuidv4 from 'uuid/v4';
 
 export const ACTIONS = {
-  FILTER_COMPLETE: 'filter_complete',
-  FILTER_ALL: 'filter_all',
-  FILTER_INCOMPLETE: 'filter_incomplete',
-  ADD_TODO: 'add_todo',
-  EDIT_TODO: 'edit_todo',
-  REMOVE_TODO: 'remove_todo',
-  TOGGLE_TODO: 'toggle_todo',
-  CLEAR_COMPLETED_TODOS: 'clear_completed_todos'
+  FILTER_COMPLETE: 'FILTER_COMPLETE',
+  FILTER_ALL: 'FILTER_ALL',
+  FILTER_INCOMPLETE: 'FILTER_INCOMPLETE',
+  ADD_TODO: 'ADD_TODO',
+  EDIT_TODO: 'EDIT_TODO',
+  REMOVE_TODO: 'REMOVE_TODO',
+  TOGGLE_TODO: 'TOGGLE_TODO',
+  CLEAR_COMPLETED_TODOS: 'CLEAR_COMPLETED_TODOS'
 };
 
 const initialState = {
