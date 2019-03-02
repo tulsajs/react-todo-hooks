@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import uuidv4 from 'uuid/v4';
+import React, { useRef, useCallback } from 'react';
+import useTodos, { ACTIONS } from './hooks/useTodos';
 import {
   ActionButton,
   Checkbox,
@@ -14,104 +14,35 @@ import {
   List
 } from '../components';
 
-const COMPLETE = 'complete';
-const ALL = 'all';
-const INCOMPLETE = 'incomplete';
-
-function useTodos(defaultTodos) {
+export default function HookApp() {
   const inputRef = useRef(null);
-  const [todos, setTodos] = useState(defaultTodos);
-  const [editingTodoId, setEditingTodoId] = useState(null);
+  const { dispatch, filter, todos } = useTodos();
 
-  const addTodo = event => {
-    event.preventDefault();
-    const name = inputRef.current.value;
-    if (name === '') return;
-    inputRef.current.value = '';
-    if (editingTodoId) {
-      setTodos(
-        todos.map(todo => {
-          if (todo.id === editingTodoId) {
-            return { ...todo, name };
-          } else {
-            return todo;
-          }
-        })
-      );
-    } else {
-      setTodos([...todos, { id: uuidv4(), name, completed: false }]);
-    }
-  };
-
-  const removeTodo = id => {
-    setTodos(todos.filter(todo => todo.id !== id));
-  };
-
-  const editTodo = todo => {
-    inputRef.current.value = todo.name;
-    setEditingTodoId(todo.id);
-    inputRef.current.focus();
-  };
-
-  const toggleTodoStatus = id => {
-    setTodos(
-      todos.map(todo => {
-        if (todo.id === id) {
-          return { ...todo, completed: !todo.completed };
-        } else {
-          return todo;
-        }
-      })
-    );
-  };
-
-  const clearCompleted = () => {
-    setTodos(todos.filter(todo => !todo.completed));
-  };
-
-  return [
-    addTodo,
-    editTodo,
-    removeTodo,
-    inputRef,
-    toggleTodoStatus,
-    clearCompleted,
-    todos
-  ];
-}
-
-function useFilters(todos) {
-  const [filter, setFilter] = useState(ALL);
-
-  const filterTodos = (f = filter) => {
-    switch (f) {
-      case ALL:
+  const filteredTodos = filter => {
+    switch (filter) {
+      case ACTIONS.FILTER_ALL:
         return todos;
-      case COMPLETE:
+      case ACTIONS.FILTER_COMPLETE:
         return todos.filter(todo => todo.completed);
-      case INCOMPLETE:
+      case ACTIONS.FILTER_INCOMPLETE:
         return todos.filter(todo => !todo.completed);
       default:
         return todos;
     }
   };
 
-  return [filter, setFilter, filterTodos];
-}
-
-export default function HookApp() {
-  const [
-    addTodo,
-    editTodo,
-    removeTodo,
-    inputRef,
-    toggleTodoStatus,
-    clearCompleted,
-    todos
-  ] = useTodos([
-    { id: uuidv4(), name: 'Give a Talk at TulsaJS', completed: false }
-  ]);
-  const [filter, setFilter, filterTodos] = useFilters(todos);
+  const addTodo = useCallback(event => {
+    event.preventDefault();
+    const name = inputRef.current.value;
+    if (name === '') return;
+    inputRef.current.value = '';
+    dispatch({ type: ACTIONS.ADD_TODO, name });
+  });
+  const editTodo = useCallback(todo => {
+    inputRef.current.value = todo.name;
+    inputRef.current.focus();
+    dispatch({ type: ACTIONS.EDIT_TODO, id: todo.id });
+  });
 
   return (
     <>
@@ -127,14 +58,16 @@ export default function HookApp() {
         </Label>
       </form>
       <List>
-        {filterTodos().map(todo => (
+        {filteredTodos(filter).map(todo => (
           <Item key={todo.id} data-testid="item">
             <Label>
               <Checkbox
                 data-testid="todo-checkbox"
                 type="checkbox"
                 checked={todo.completed}
-                onChange={() => toggleTodoStatus(todo.id)}
+                onChange={() =>
+                  dispatch({ type: ACTIONS.TOGGLE_TODO, id: todo.id })
+                }
               />
               <span>{todo.name}</span>
             </Label>
@@ -142,7 +75,9 @@ export default function HookApp() {
               <ActionButton
                 data-testid="delete-todo"
                 style={{ marginRight: 5 }}
-                onClick={() => removeTodo(todo.id)}
+                onClick={() =>
+                  dispatch({ type: ACTIONS.REMOVE_TODO, id: todo.id })
+                }
               />
               <ActionButton
                 data-testid="edit-todo"
@@ -157,28 +92,31 @@ export default function HookApp() {
         <FooterList>
           <FooterListItem>
             <FooterButton
-              active={filter === ALL}
-              onClick={() => setFilter(ALL)}>
-              All {filterTodos(ALL).length}
+              active={filter === ACTIONS.FILTER_ALL}
+              onClick={() => dispatch({ type: ACTIONS.FILTER_ALL })}>
+              All {filteredTodos(ACTIONS.FILTER_ALL).length}
             </FooterButton>
           </FooterListItem>
           <FooterListItem>
             <FooterButton
-              active={filter === COMPLETE}
-              onClick={() => setFilter(COMPLETE)}>
-              Completed {filterTodos(COMPLETE).length}
+              active={filter === ACTIONS.FILTER_COMPLETE}
+              onClick={() => dispatch({ type: ACTIONS.FILTER_COMPLETE })}>
+              Completed {filteredTodos(ACTIONS.FILTER_COMPLETE).length}
             </FooterButton>
           </FooterListItem>
           <FooterListItem>
             <FooterButton
-              active={filter === INCOMPLETE}
-              onClick={() => setFilter(INCOMPLETE)}>
-              Incomplete {filterTodos(INCOMPLETE).length}
+              active={filter === ACTIONS.FILTER_INCOMPLETE}
+              onClick={() => dispatch({ type: ACTIONS.FILTER_INCOMPLETE })}>
+              Incomplete {filteredTodos(ACTIONS.FILTER_INCOMPLETE).length}
             </FooterButton>
           </FooterListItem>
-          {filterTodos(COMPLETE).length > 0 && (
+          {filteredTodos(ACTIONS.FILTER_COMPLETE).length > 0 && (
             <FooterListItem>
-              <FooterButton onClick={clearCompleted}>
+              <FooterButton
+                onClick={() =>
+                  dispatch({ type: ACTIONS.CLEAR_COMPLETED_TODOS })
+                }>
                 Clear Completed
               </FooterButton>
             </FooterListItem>
